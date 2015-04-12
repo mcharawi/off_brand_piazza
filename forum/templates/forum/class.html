@@ -1,0 +1,18 @@
+{% if questions %}
+    <ul>
+    {% for q in questions %}
+        <li>{{ q.title }}</a></li>
+        {% if answers %}
+        <ol>
+        	{% for a in answers %}
+        	{% if a.question = q %}
+        	<li>{{ a.text }}</li>
+        	{% endif %}
+        	{% endfor %}
+        </ol>
+        {% endif %}
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No questions available.</p>
+{% endif %}

@@ -1,38 +1,44 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-# Create your models here. 
+class Profile(models.Model):
 
+    TEACHER, STUDENT = range(2)
+    TYPE_CHOICES = [(TEACHER, "Teacher"), (STUDENT, "Student")]
 
-class Teacher(models.Model):
-	name = models.CharField(max_length = 200)
-	classrooms = models.ManyToManyField('Classroom')
-	user = models.OneToOneField(User)
+    user = models.OneToOneField(User)
+    type = models.IntegerField(choices = TYPE_CHOICES, default = STUDENT)
+    classrooms = models.ManyToManyField('Classroom')
 
-class Student(models.Model):
-	name = models.CharField(max_length = 200)
-	classrooms = models.ManyToManyField('Classroom')
-	user = models.OneToOneField(User)
 
 class Classroom(models.Model):
-	class_name = models.CharField(max_length = 200)
-	teachers = models.ManyToManyField('Teacher')
-	students = models.ManyToManyField('Student')
+    class_name = models.CharField(max_length = 200)
+    class_id = models.IntegerField()
+
+    def __unicode__(self):
+        return self.class_name
+
 
 class Question(models.Model):
-	title = models.CharField(max_length = 200)
-	text = models.TextField(max_length = 1000, default = '')
-	author = models.ForeignKey('Student')
+    title = models.CharField(max_length = 200)
+    text = models.TextField(max_length = 1000, default = '')
+    author = models.ForeignKey('Profile')
+    classroom = models.ForeignKey('Classroom', null = True)
 
-class Note(models.Model):
-	title = models.CharField(max_length = 200)
-	author = models.ForeignKey('Teacher')
+    def __unicode__(self):
+        return self.title
+
+    def author(self):
+        return self.author
 
 class Comment(models.Model):
-	text = models.TextField(max_length = 1000, default = '')
-	author = models.ForeignKey('Student')
+    text = models.TextField(max_length = 1000, default = '')
+    author = models.ForeignKey('Profile')
+    question = models.ForeignKey('Question', null = True)
 
-class Answer(models.Model):
-	author = models.ForeignKey('Teacher')
-	text = models.TextField(max_length = 1000, default = '')
+    def __unicode__(self):
+        return self.text
+
+    def author(self):
+        return self.author
 

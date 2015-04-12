@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- Is anyone getting tired of repeatedly entering the header over and over?? -->
+        <title>OBP</title>
+    </head>
+
+    <body>
+        <h1>Welcome to OBP</h1>
+
+        {% if user.is_authenticated %}
+            <p><a href="/index/classes/">View your classes!</a></p>
+            <p><a href="/index/profile_update_form/">Sign Up for classes</a></p>
+            <p><a href="/index/logout/">Logout</a><p>
+        {% else %}
+            <p><a href="/index/login/">Please log in</a> or <a href="/index/register/">Sign Up</a></p>
+        {% endif %}
+    </body>
+</html>

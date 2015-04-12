@@ -2,11 +2,13 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
+from django.conf import settings
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
@@ -15,13 +17,23 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('class_name', models.CharField(max_length=200)),
+                ('class_id', models.IntegerField()),
             ],
         ),
         migrations.CreateModel(
-            name='Note',
+            name='Comment',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('title', models.CharField(max_length=200)),
+                ('text', models.TextField(default=b'', max_length=1000)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Profile',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('type', models.IntegerField(default=1, choices=[(0, b'Teacher'), (1, b'Student')])),
+                ('classrooms', models.ManyToManyField(to='forum.Classroom')),
+                ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.CreateModel(
@@ -29,42 +41,13 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('title', models.CharField(max_length=200)),
-            ],
-        ),
-        migrations.CreateModel(
-            name='Student',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name', models.CharField(max_length=200)),
-                ('classrooms', models.ManyToManyField(to='forum.Classroom')),
-            ],
-        ),
-        migrations.CreateModel(
-            name='Teacher',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name', models.CharField(max_length=200)),
-                ('classrooms', models.ManyToManyField(to='forum.Classroom')),
+                ('text', models.TextField(default=b'', max_length=1000)),
+                ('classroom', models.ForeignKey(to='forum.Classroom', null=True)),
             ],
         ),
         migrations.AddField(
-            model_name='question',
-            name='author',
-            field=models.ForeignKey(to='forum.Student'),
-        ),
-        migrations.AddField(
-            model_name='note',
-            name='author',
-            field=models.ForeignKey(to='forum.Teacher'),
-        ),
-        migrations.AddField(
-            model_name='classroom',
-            name='students',
-            field=models.ManyToManyField(to='forum.Student'),
-        ),
-        migrations.AddField(
-            model_name='classroom',
-            name='teachers',
-            field=models.ManyToManyField(to='forum.Teacher'),
+            model_name='comment',
+            name='question',
+            field=models.ForeignKey(to='forum.Question', null=True),
         ),
     ]

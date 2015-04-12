@@ -1,0 +1,13 @@
+{% if user.is_authenticated %}
+	{% if classroom_list %}
+    	<ul>
+    	{% for class in classroom_list %}
+        	<li><a href="/index/classes/{{ class.class_id }}/">{{ class.class_name }}</a></li>
+    	{% endfor %}
+    	</ul>
+	{% else %}
+    	<p>Sign up for classes!</p>
+	{% endif %}
+{% else %}
+	<p> Please login to view your classes!</p>
+{% endif %}
