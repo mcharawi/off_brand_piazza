@@ -1,5 +1,5 @@
 from django import forms
-from .models import Profile, Question, Comment, Classroom
+from .models import Profile, Post, Classroom
 from django.contrib.auth.models import User
 
 
@@ -21,3 +21,12 @@ class ProfileForm(forms.ModelForm):
 		model = Profile
 		fields = ('type',)
 
+
+class PostForm(forms.ModelForm):
+	title = forms.CharField(max_length = 200)
+	text = forms.CharField(widget=forms.Textarea)
+	classroom = forms.ModelChoiceField(queryset=Classroom.objects.all())	
+
+	class Meta:
+		model = Post
+		fields = ('title', 'text', 'classroom')

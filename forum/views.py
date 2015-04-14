@@ -5,6 +5,22 @@ from . import models, forms
 from django.contrib.auth import authenticate, login, logout
 from django.views.generic.edit import UpdateView
  
+def add_post(request):
+	if request.method == 'POST':
+		form = forms.PostForm(request.POST)
+
+		if form.is_valid():
+			form.save(commit=False)
+			form.author = models.Profile.objects.get(user=request.user)
+			form.save()
+			return index(request)
+		else:
+			print form.errors
+	else:
+		form = forms.PostForm()
+	return render(request, 'forum/add_post.html', {'form': form})
+
+
 
 # Site landing page
 def index(request):
@@ -25,21 +41,13 @@ def user_login(request):
         else:
             print "Invalid login details: {0}, {1}".format(username, password)
             return HttpResponse("Invalid login details supplied.")
-
-    # The request is not a HTTP POST, so display the login form.
-    # This scenario would most likely be a HTTP GET.
     else:
-        # No context variables to pass to the template system, hence the
-        # blank dictionary object...
         return render(request, 'forum/login.html', {})
 
 def user_logout(request):
 	logout(request)
 	return HttpResponseRedirect('/index/')
 
-#def signup(request):
-#	if request.method == 'POST':
-#		class_form = forms.ClassForm(data=request.POST)
 
 class RegisterforClasses(UpdateView):
 	model = models.Profile
@@ -49,6 +57,12 @@ class RegisterforClasses(UpdateView):
 
 	def get_object(self):
 		return models.Profile.objects.get(user=self.request.user)
+
+class EditPost(UpdateView):
+	model = models.Post
+	fields = ['title', 'text']
+	template_name_suffix = '_update_form'
+	success_url = '/index/'
 
 
 # Register page
@@ -80,22 +94,24 @@ def register(request):
 	return render(request, 'forum/register.html', 
 		{'user_form': user_form, 'profile_form': profile_form, 'registered': registered})
 
+
+
 # List of classrooms that can be joined
 def classes(request):
-	curr_user = models.Profile.objects.get(user=request.user)
-	classroom_list = curr_user.classrooms.all()
+	if request.user.is_authenticated():
+		curr_user = models.Profile.objects.get(user=request.user)
+		classroom_list = curr_user.classrooms.all()
+		context = RequestContext(request, {'classroom_list': classroom_list,})
+	else:
+		context = RequestContext(request, {})
 	template = loader.get_template('forum/list.html')
-	context = RequestContext(request, {'classroom_list': classroom_list,})
 	return HttpResponse(template.render(context))
 
 
-# List of questions and answers for a particular class
+# List of posts for a particular class
 def classroom(request, class_id):
 	classroom = models.Classroom.objects.get(class_id = class_id)
-	questions = models.Question.objects.filter(classroom = classroom)
-	answers = models.Comment.objects.filter(text = '')
-	for question in questions:
-		answers = answers | models.Comment.objects.filter(question = question)
+	posts = models.Post.objects.filter(classroom = classroom)
 	template = loader.get_template('forum/class.html')
-	context = RequestContext(request, {'questions': questions, 'answers':answers,})
+	context = RequestContext(request, {'posts': posts,})
 	return HttpResponse(template.render(context))

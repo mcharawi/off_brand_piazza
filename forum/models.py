@@ -19,7 +19,7 @@ class Classroom(models.Model):
         return self.class_name
 
 
-class Question(models.Model):
+class Post(models.Model):
     title = models.CharField(max_length = 200)
     text = models.TextField(max_length = 1000, default = '')
     author = models.ForeignKey('Profile')
@@ -30,15 +30,3 @@ class Question(models.Model):
 
     def author(self):
         return self.author
-
-class Comment(models.Model):
-    text = models.TextField(max_length = 1000, default = '')
-    author = models.ForeignKey('Profile')
-    question = models.ForeignKey('Question', null = True)
-
-    def __unicode__(self):
-        return self.text
-
-    def author(self):
-        return self.author
-

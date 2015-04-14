@@ -21,10 +21,12 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='Comment',
+            name='Post',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('title', models.CharField(max_length=200)),
                 ('text', models.TextField(default=b'', max_length=1000)),
+                ('classroom', models.ForeignKey(to='forum.Classroom', null=True)),
             ],
         ),
         migrations.CreateModel(
@@ -35,19 +37,5 @@ class Migration(migrations.Migration):
                 ('classrooms', models.ManyToManyField(to='forum.Classroom')),
                 ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL)),
             ],
-        ),
-        migrations.CreateModel(
-            name='Question',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('title', models.CharField(max_length=200)),
-                ('text', models.TextField(default=b'', max_length=1000)),
-                ('classroom', models.ForeignKey(to='forum.Classroom', null=True)),
-            ],
-        ),
-        migrations.AddField(
-            model_name='comment',
-            name='question',
-            field=models.ForeignKey(to='forum.Question', null=True),
         ),
     ]

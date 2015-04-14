@@ -1,18 +1,17 @@
-{% if questions %}
+{% if user.is_authenticated %}
+<p><a href="/index/add_post/">New Post</a></p>
+
+{% if posts %}
     <ul>
-    {% for q in questions %}
-        <li>{{ q.title }}</a></li>
-        {% if answers %}
-        <ol>
-        	{% for a in answers %}
-        	{% if a.question = q %}
-        	<li>{{ a.text }}</li>
-        	{% endif %}
-        	{% endfor %}
-        </ol>
-        {% endif %}
+    {% for p in posts %}
+        <li><a href="/index/{{ p.id }}/post_update_form/">{{ p.title }}</a></li>
+        <p>{{ p.text }}</p>
     {% endfor %}
     </ul>
 {% else %}
-    <p>No questions available.</p>
+    <p>No posts available.</p>
+{% endif %}
+
+{% else %}
+<p>Please Login!</p>
 {% endif %}
